@@ -4,7 +4,7 @@ class Embed::ArticlesController < ApplicationController
 
   # GET /articles/new
   def new
-    response.headers['X-Frame-Options'] = "ALLOW-FROM http://evil.example.net:9999"
+    response.headers['X-Frame-Options'] = "ALLOW-FROM http://good.example.jp:9000"
     @article = Article.new
   end
 
