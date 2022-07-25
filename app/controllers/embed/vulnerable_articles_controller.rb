@@ -6,6 +6,8 @@ class Embed::VulnerableArticlesController < ApplicationController
 
   # GET /articles/new
   def new
+    # ALLOW-FROM は廃止され、最新のブラウザでは機能しない
+    # そのため悪意のあるサイトにも埋め込みが可能な状態になっている
     response.headers['X-Frame-Options'] = "ALLOW-FROM http://good.example.jp:9000"
     @article = Article.new
   end

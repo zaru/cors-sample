@@ -4,7 +4,11 @@ class Embed::ArticlesController < ApplicationController
 
   # GET /articles/new
   def new
-    response.headers['X-Frame-Options'] = "ALLOW-FROM http://good.example.jp:9000"
+    # 指定したサイトに埋め込まれた場合だけ X-Frame-Options を返さないで許可する
+    if request.referrer.start_with?('http://good.example.jp:9000/')
+      response.headers['X-Frame-Options'] = nil
+    end
+
     @article = Article.new
   end
 
