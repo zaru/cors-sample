@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ja" xmlns="http://www.w3.org/1999/html">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+    <title>Document</title>
+  </head>
+  <body>
+    <main>
+      <h1>Evil なページ</h1>
+      <ul>
+        <li>http://evil.example.net:9999/evil.html</li>
+      </ul>
+
+      <h1>攻撃を防げている例</h1>
+
+      <h2>iframe の POST 検証</h2>
+
+      <h3>埋め込みを許可していないフォーム</h3>
+      <ul>
+        <li>埋め込みフォーム : http://form.example.com:3000/articles/new</li>
+        <li><code>X-Frame-Options</code> が <code>SAMEORIGIN</code> なのでクロスドメインでは表示されない</li>
+      </ul>
+      <iframe src="http://form.example.com:3000/articles/new" width="500" height="200"></iframe>
+
+      <h3>指定サイトにだけ埋め込みを許可しているフォーム</h3>
+      <ul>
+        <li>埋め込みフォーム : http://form.example.com:3000/embed/articles/new</li>
+        <li><code>X-Frame-Options</code> が <code>SAMEORIGIN</code> なのでクロスドメインでは表示されない</li>
+      </ul>
+      <iframe src="http://form.example.com:3000/embed/articles/new" width="500" height="200"></iframe>
+
+      <h2>JS からフォーム POST 検証</h2>
+
+      <h3>JS による POST を許可していない API</h3>
+      <ul>
+        <li>POST : http://form.example.com:3000/articles.json</li>
+        <li>
+          <code>protect_from_forgery</code> による CSRF 対策をしているので <code>ActionController::InvalidAuthenticityToken</code> エラーになる
+        </li>
+      </ul>
+      <button type="button" class="btn-post">submit button</button>
+      <script>
+        document.querySelector('.btn-post').addEventListener('click', async () => {
+          const formData = new FormData();
+          formData.append('article[title]', 'hogepiyo');
+          await fetch('http://form.example.com:3000/articles.json', {
+            method: 'POST',
+            body: formData
+          }).catch((error) => alert(error));
+        });
+      </script>
+
+      <h3>指定サイトにだけ JS による POST を許可している API</h3>
+      <ul>
+        <li>POST : http://form.example.com:3000/embed/articles.json</li>
+        <li>
+          <code>skip_forgery_protection</code> を指定しているので、<code>authenticity_token</code> もリクエスト Origin もチェックしていないが、手動で Origin チェックをしているの POST は失敗する
+        </li>
+        <li>
+          <code>Access-Control-Allow-Origin</code> が http://good.example.jp:9000 しか許可していないので、レスポンスを JS は受け取れない
+        </li>
+      </ul>
+      <button type="button" class="btn-embed-post">submit button</button>
+      <script>
+        document.querySelector('.btn-embed-post').addEventListener('click', async () => {
+          const formData = new FormData();
+          formData.append('article[title]', 'hogepiyo');
+          await fetch('http://form.example.com:3000/embed/articles.json', {
+            method: 'POST',
+            body: formData
+          }).catch((error) => alert(error));
+        });
+      </script>
+
+      <h1>攻撃が成功している例</h1>
+
+      <h2>iframe の POST 検証</h2>
+
+      <h3>指定サイトにだけ埋め込みを許可している<em>つもりの</em>フォーム</h3>
+      <ul>
+        <li>埋め込みフォーム : http://form.example.com:3000/embed/vulnerable_articles/new</li>
+        <li><code>X-Frame-Options</code> に <code>ALLOW-FROM http://good.example.jp:9000/</code> を指定しているが
+          <code>ALLOW-FROM</code> は廃止されている</li>
+        <li>つまりホワイトリストで悪意あるサイトに iframe 埋め込みを防ぐようにしたつもりが、どこにでも埋め込まれる状態になっている</li>
+      </ul>
+      <iframe src="http://form.example.com:3000/embed/vulnerable_articles/new" width="500" height="200"></iframe>
+
+      <h2>JS からフォーム POST 検証</h2>
+
+      <h3>指定サイトにだけ JS による POST を許可している<em>つもりの</em> API</h3>
+      <ul>
+        <li>
+          <code>skip_forgery_protection</code> を指定しているので、<code>authenticity_token</code> もリクエスト Origin もチェックしていないので POST 自体は成功する
+        </li>
+        <li>
+          <code>Access-Control-Allow-Origin</code> が http://good.example.jp:9000 しか許可していないので、レスポンスを JS は受け取れない
+        </li>
+        <li>
+          JS ではエラーになるので、ぱっと見て攻撃を防げているように勘違いするが、実際にはサーバ側の処理は完了してしまっている点に注意
+        </li>
+      </ul>
+      <button type="button" class="btn-vulnerable-embed-post">submit button</button>
+      <script>
+        document.querySelector('.btn-vulnerable-embed-post').addEventListener('click', async () => {
+          const formData = new FormData();
+          formData.append('article[title]', 'hogepiyo');
+          await fetch('http://form.example.com:3000/embed/vulnerable_articles.json', {
+            method: 'POST',
+            body: formData
+          }).catch((error) => alert(`エラーは表示されるが、攻撃は成功している。 ${error}`));
+        });
+      </script>
+    </main>
+  </body>
+</html>

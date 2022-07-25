@@ -1,24 +1,21 @@
-# README
+# CSRF やクリックジャッキングの対策と例
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+```bash
+$ ralis s
 
-Things you may want to cover:
+$ cd ./client_site
+$ php -S 0.0.0.0:9000
+$ php -S 0.0.0.0:9999
+```
 
-* Ruby version
+`/etc/hosts` ファイルを修正してローカルホストをクロスドメインでアクセスできるようにする
 
-* System dependencies
+```
+127.0.0.1 form.example.com
+127.0.0.1 good.example.jp
+127.0.0.1 evil.example.net
+```
 
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+- アプリケーション : http://form.example.com:3000/articles
+- 正規の埋め込みページ : http://good.example.jp:9000/good.html
+- 悪意のあるページ : http://evil.example.net:9999/evil.html
