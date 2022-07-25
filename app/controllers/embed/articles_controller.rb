@@ -4,6 +4,7 @@ class Embed::ArticlesController < ApplicationController
 
   # GET /articles/new
   def new
+    response.headers['X-Frame-Options'] = "ALLOW-FROM http://evil.example.net:9999"
     @article = Article.new
   end
 
@@ -14,7 +15,7 @@ class Embed::ArticlesController < ApplicationController
 
     respond_to do |format|
       if @article.save
-        format.html { redirect_to article_url(@article), notice: "Article was successfully created." }
+        format.html { redirect_to embed_thanks_url, notice: "Article was successfully created." }
         format.json { render :show, status: :created, location: @article }
       else
         format.html { render :new, status: :unprocessable_entity }
