@@ -14,7 +14,12 @@ class Embed::ArticlesController < ApplicationController
 
   # POST /articles or /articles.json
   def create
-    raise ActionController::InvalidAuthenticityToken if request.origin.present? && request.origin != request.base_url
+    # CSRF されないようにリクエスト Origin の同一性チェックをしている
+    if request.origin.present? &&
+      request.origin != 'http://good.example.jp:9000' &&
+      request.origin != request.base_url
+      raise ActionController::InvalidAuthenticityToken
+    end
 
     response.headers['Access-Control-Allow-Origin'] = "http://good.example.jp:9000"
     @article = Article.new(article_params)
