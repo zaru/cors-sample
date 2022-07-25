@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   resources :articles
+  resources :vulnerable_articles, only: [:new, :create]
   namespace :embed do
     resources :articles, only: [:new, :create]
     resources :vulnerable_articles, only: [:new, :create]
