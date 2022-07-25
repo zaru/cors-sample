@@ -1,4 +1,6 @@
 class Embed::ArticlesController < ApplicationController
+  # InvalidAuthenticityToken が発生しないようにする = authenticity_token のチェックをしない
+  skip_forgery_protection
 
   # GET /articles/new
   def new
