@@ -2,7 +2,9 @@ version: '3'
 
 services:
   app:
-    build: .docker
+    build:
+      context: .
+      dockerfile: .docker/Dockerfile
     environment:
       - BINDING=0.0.0.0
     ports:
@@ -12,5 +14,5 @@ services:
     volumes:
       - .:/work
     tty: true
-    # command:
-    #   sh -c "yarn serve"
+    command:
+      /work/entrypoint.sh
