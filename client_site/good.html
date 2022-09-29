@@ -35,18 +35,18 @@
 
       <h3>埋め込みを許可していないフォーム</h3>
       <ul>
-        <li>埋め込みフォーム : http://form.example.com:3000/articles/new</li>
+        <li>埋め込みフォーム : http://form.example.com:3001/articles/new</li>
         <li><code>X-Frame-Options</code> が <code>SAMEORIGIN</code> なのでクロスドメインでは表示されない (Rails デフォルト)</li>
       </ul>
-      <iframe src="http://form.example.com:3000/articles/new" width="500" height="200"></iframe>
+      <iframe src="http://form.example.com:3001/articles/new" width="500" height="200"></iframe>
 
       <h3>指定サイトにだけ埋め込みを許可しているフォーム</h3>
       <ul>
-        <li>埋め込みフォーム : http://form.example.com:3000/embed/articles/new</li>
+        <li>埋め込みフォーム : http://form.example.com:3001/embed/articles/new</li>
         <li><code>X-Frame-Options</code> をレスポンスヘッダで返していないのでクロスドメインでも表示できる</li>
         <li><code>skip_forgery_protection</code> を指定しているので Cookie が送信されなくても POST が成功する</li>
       </ul>
-      <iframe src="http://form.example.com:3000/embed/articles/new" width="500" height="200"></iframe>
+      <iframe src="http://form.example.com:3001/embed/articles/new" width="500" height="200"></iframe>
 
       <h2>JS からフォーム POST 検証</h2>
 
@@ -58,13 +58,13 @@
 
       <h3>ブラウザから直接 POST を許可していない API</h3>
       <ul>
-        <li>POST : http://form.example.com:3000/articles.json</li>
+        <li>POST : http://form.example.com:3001/articles.json</li>
         <li>
           <code>protect_from_forgery</code> による CSRF 対策をしているので <code>ActionController::InvalidAuthenticityToken</code> エラーになる
           <ul>
             <li>Cookie は送信していないので正確には以下のエラー</li>
             <li><code>HTTP Origin header (http://good.example.jp:9000) didn't match request.base_url
-              (http://form.example.com:3000)</code></li>
+              (http://form.example.com:3001)</code></li>
             <li>フォームを実行している Rails のドメインと、リクエストしている Origin ドメインが異なるよというエラー</li>
             <li><code>protect_from_forgery</code> は <code>authenticity_token</code> の妥当性チェック以外に<a href="https://github.com/rails/rails/blob/01f58d62c2f31f42d0184e0add2b6aa710513695/actionpack/lib/action_controller/metal/request_forgery_protection.rb#L601"> Origin チェックもしている</a></li>
           </ul>
@@ -75,7 +75,7 @@
         document.querySelector('.btn-post').addEventListener('click', async () => {
           const formData = new FormData();
           formData.append('article[title]', 'hogepiyo');
-          await fetch('http://form.example.com:3000/articles.json', {
+          await fetch('http://form.example.com:3001/articles.json', {
             method: 'POST',
             body: formData
           }).catch((error) => alert(error));
@@ -84,7 +84,7 @@
 
       <h3>指定サイトにだけブラウザから直接 POST を許可している API</h3>
       <ul>
-        <li>POST : http://form.example.com:3000/embed/articles.json</li>
+        <li>POST : http://form.example.com:3001/embed/articles.json</li>
         <li>
           <code>skip_forgery_protection</code> を指定しているので、<code>authenticity_token</code> もリクエスト Origin もチェックせず POST 成功する
           <ul>
@@ -112,7 +112,7 @@ end</pre>
         document.querySelector('.btn-embed-post').addEventListener('click', async () => {
           const formData = new FormData();
           formData.append('article[title]', 'hogepiyo');
-          const result = await fetch('http://form.example.com:3000/embed/articles.json', {
+          const result = await fetch('http://form.example.com:3001/embed/articles.json', {
             method: 'POST',
             body: formData
           });

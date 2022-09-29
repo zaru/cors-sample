@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: .docker/Dockerfile
+    environment:
+      - BINDING=0.0.0.0
+    ports:
+      - 3001:3000
+      - 9000:9000
+      - 9999:9999
+    volumes:
+      - .:/work
+    tty: true
+    command:
+      /work/entrypoint.sh
