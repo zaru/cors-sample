@@ -4,7 +4,7 @@
 
 ### セットアップ
 1. `docker-compose up -d`
-1. `docker exec -it cors-sample_app_1 /bin/bash`
+1. `docker-compose exec app bash`
 1. `bundle install`(初回のみ)
 1. `rails db:migtate`
 
